@@ -1,5 +1,7 @@
 import express from 'express'
 import dotenv from 'dotenv'
+import { matchesRouter } from './routes/matches';
+dotenv.config();
 
 const app= express();
 const Port = process.env.PORT || 5000;
@@ -10,6 +12,7 @@ app.get('/' , (req,res) =>{
     res.json({ msg: 'Hello from server' })
 })
 
+app.use('/matches' ,matchesRouter);
 
 
 
