@@ -1,8 +1,13 @@
+import AgentAPI from 'apminsight';
+AgentAPI.config();
+
 import express from 'express'
 import dotenv from 'dotenv'
 import http from 'http';
 import {attachWebSocketServer} from "./ws/server.js";
 import { matchesRouter } from './routes/matches.js';
+import {securityMiddleware} from "./arcjet.js";
+import {commentaryRouter} from "./routes/commentary.js";
 dotenv.config();
 
 const app= express();
@@ -18,6 +23,7 @@ app.get('/' , (req,res) =>{
 })
 
 app.use('/matches' ,matchesRouter);
+app.use('/matches/:id/commentary', commentaryRouter);
 
 const { broadcastMatchCreated } = attachWebSocketServer(server);
 app.locals.broadcastMatchCreated = broadcastMatchCreated;
@@ -28,7 +34,7 @@ app.use((err, req, res, next) => {
     res.status(500).send('Something broke!'); 
 });
 
-
+// app.use(securityMiddleware());
 
 server.listen(PORT, HOST, () => {
     const baseUrl = HOST === '0.0.0.0' ? `http://localhost:${PORT}` : `http://${HOST}:${PORT}`;
