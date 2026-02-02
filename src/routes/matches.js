@@ -37,16 +37,18 @@ matchesRouter.post('/', async (req, res) => {
     if(!parsed.success) {
         return res.status(400).json({ error: 'Invalid payload.', details: parsed.error.issues });
     }
-    const { data: { startTime, endTime, homeScore, awayScore } } = parsed;
+     const { data: { startTime, endTime, homeScore, awayScore } } = parsed;
+        const startDate = new Date(startTime);
+        const endDate = new Date(endTime);
 
     try {
         const [event] = await db.insert(matches).values({
             ...parsed.data,
-            startTime: new Date(startTime),
-            endTime: new Date(endTime),
+            startTime: startDate,
+            endTime: endDate,
             homeScore: homeScore ?? 0,
             awayScore: awayScore ?? 0,
-            status: getMatchStatus(startTime, endTime),
+            status: getMatchStatus(startDate, endDate),
         }).returning();
 
         res.status(201).json({ data: event });
